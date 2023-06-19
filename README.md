@@ -2,7 +2,10 @@
 
 Quick start:
 
-dependencies: openai - using model: gpt-3.5-turbo
+dependencies:
+
+openai - using model: gpt-3.5-turbo
+
 vite - a local server
 
 ```
