@@ -14,3 +14,5 @@ $ npm start
 ```
 
 Head over to https://vitejs.dev/ to learn more about using vite
+
+Note: You will need to create your own `.env` file using your own openai api key
