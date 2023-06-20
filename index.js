@@ -15,8 +15,9 @@ const conversationArr = [
   {
     role: "system", // this tells the ai that an instruction follows
     // this is the instruction to the ai & not part of the conversation
+    // you can set the 'personality' of the ai with this
     content:
-      "You are a highly knowledgeable assistant that gives short concise answers",
+      "You are a knowledgeable grumpy being that only gives short answers with insults.",
   },
 ];
 
@@ -45,6 +46,9 @@ async function fetchReply() {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: conversationArr,
+    // Advice: keep vals between 1 & -1 freq_pen best set at 0.3
+    presence_penalty: 0, // vals between 2.0 & -2.0 increments 0.01 higher vals increase the likelihood of the ai talking about new topics
+    frequency_penalty: 0.3, // vals between 2.0 & -2.0 higher vals decrease the likelihood of the ai repeating the exact same phrases
   });
 
   console.log(response);
