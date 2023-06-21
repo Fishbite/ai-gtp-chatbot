@@ -161,15 +161,19 @@ async function renderConversationFromDb() {
       // // store a reference to the array of objects returned in `snapshot`
       const dbArr = Object.values(snapshot.val());
       // // console.log(dbArr);
-      // // iterate over the array and create a new speech bubble
+      // // iterate over the array and create a new speech bubble for the content of each object
       dbArr.forEach((obj) => {
         const newSpeechBubble = document.createElement("div");
-        //
+        // add classes based on role = user or ai
         newSpeechBubble.classList.add(
           "speech",
           `speech-${obj.role === "user" ? "human" : "ai"}`
         );
+
+        // add the new speech bubble
         chatbotConversation.appendChild(newSpeechBubble);
+
+        // fill with the objects content
         newSpeechBubble.innerText = obj.content;
       });
 
