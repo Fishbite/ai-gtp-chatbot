@@ -11,7 +11,7 @@ const configuration = new Configuration({
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref } from "firebase/database";
+import { getDatabase, ref, push } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -57,11 +57,20 @@ document.addEventListener("submit", (e) => {
 
   const userInput = document.getElementById("user-input");
 
-  // add an object holding the user's input to the conversation array
-  conversationArr.push({
+  // **** firebase **** \\
+  // add an object holding the user's input to the conversation DB
+  // the firebase `push()` method NOT JS `push()` method
+  push(conversationInDb, {
     role: "user",
     content: userInput.value,
   });
+
+  // // **** Pre firebase **** \\
+  // // add an object holding the user's input to the conversation array
+  // conversationArr.push({
+  //   role: "user",
+  //   content: userInput.value,
+  // });
 
   fetchReply();
 
