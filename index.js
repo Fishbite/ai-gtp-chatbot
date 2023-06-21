@@ -5,6 +5,8 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// https://grumpy-bot-default-rtdb.europe-west1.firebasedatabase.app/
+
 const openai = new OpenAIApi(configuration);
 
 const chatbotConversation = document.getElementById("chatbot-conversation");
