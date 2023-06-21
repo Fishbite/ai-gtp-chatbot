@@ -11,7 +11,7 @@ const configuration = new Configuration({
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, get } from "firebase/database";
+import { getDatabase, ref, push, get, remove } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -184,5 +184,15 @@ async function renderConversationFromDb() {
     }
   });
 }
+
+// clear the current conversation from DB when the 'startover' is clickced
+document.getElementById("clear-btn").addEventListener("click", () => {
+  // clear the conversation using the firebase `remove()` method
+  remove(conversationInDb);
+
+  // clear the chatbot screen and add the initial bot message
+  chatbotConversation.innerHTML =
+    '<div class="speech speech-ai">How can I help you?</div>';
+});
 
 renderConversationFromDb();
