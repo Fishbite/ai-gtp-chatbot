@@ -5,7 +5,36 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+/* ***** firebase **** */
+
 // https://grumpy-bot-default-rtdb.europe-west1.firebasedatabase.app/
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref } from "firebase/database";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const appSettings = {
+  apiKey: "AIzaSyBZJVj6oI-H5qfvDRKrMicVPwKrkZWZKPg",
+  authDomain: "grumpy-bot.firebaseapp.com",
+  databaseURL:
+    "https://grumpy-bot-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "grumpy-bot",
+  storageBucket: "grumpy-bot.appspot.com",
+  messagingSenderId: "1095213259424",
+  appId: "1:1095213259424:web:41acf3b7911af8f78887c5",
+};
+
+// Initialize Firebase
+const app = initializeApp(appSettings);
+
+const database = getDatabase(app);
+
+const conversationInDb = ref(database); // single source of truth for conversations with chatbot
+
+/* ***** firebase **** */
 
 const openai = new OpenAIApi(configuration);
 
