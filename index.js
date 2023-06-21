@@ -98,7 +98,7 @@ async function fetchReply() {
       console.log(response);
 
       // some vars to hold references to the message object & message content returned by the model
-      const msgObj = response.data.choices[0].message; // the response objec
+      const msgObj = response.data.choices[0].message; // the response object
       const msgContent = response.data.choices[0].message.content; // the response object content
 
       console.log(msgObj);
@@ -150,3 +150,35 @@ function renderTypewriterText(text) {
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight;
   }, 50);
 }
+
+// get any existing conversation from the DB when the app starts
+async function renderConversationFromDb() {
+  // get the whole conversation from the DB using firebassse's `get()` method
+  get(conversationInDb).then(async (snapshot) => {
+    if (snapshot.exists()) {
+      // console.log(snapshot);
+
+      // // store a reference to the array of objects returned in `snapshot`
+      const dbArr = Object.values(snapshot.val());
+      // // console.log(dbArr);
+      // // iterate over the array and create a new speech bubble
+      dbArr.forEach((obj) => {
+        const newSpeechBubble = document.createElement("div");
+        //
+        newSpeechBubble.classList.add(
+          "speech",
+          `speech-${obj.role === "user" ? "human" : "ai"}`
+        );
+        chatbotConversation.appendChild(newSpeechBubble);
+        newSpeechBubble.innerText = obj.content;
+      });
+
+      // scroll down to the last speech bubble
+      chatbotConversation.scrollTop = chatbotConversation.scrollHeight;
+    } else {
+      console.log("No snapshot no data, no update interface");
+    }
+  });
+}
+
+renderConversationFromDb();
