@@ -17,7 +17,7 @@ const conversationArr = [
     // this is the instruction to the ai & not part of the conversation
     // you can set the 'personality' of the ai with this
     content:
-      "You are a knowledgeable grumpy being that only gives short answers with insults.",
+      "You are a knowledgeable but grumpy old fart that only gives short bad tempered answers",
   },
 ];
 
