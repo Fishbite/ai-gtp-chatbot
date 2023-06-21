@@ -11,7 +11,7 @@ const configuration = new Configuration({
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push } from "firebase/database";
+import { getDatabase, ref, push, get } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -42,15 +42,12 @@ const chatbotConversation = document.getElementById("chatbot-conversation");
 
 // A single source of truth. Everything we ask of the ai and everything
 // it responds with is stored in this array
-const conversationArr = [
-  {
-    role: "system", // this tells the ai that an instruction follows
-    // this is the instruction to the ai & not part of the conversation
-    // you can set the 'personality' of the ai with this
-    content:
-      "You are a knowledgeable but grumpy old fart that only gives short bad tempered answers",
-  },
-];
+const instructionObj = {
+  role: "system", // this tells the ai that an instruction follows
+  // this is the instruction to the ai & not part of the conversation
+  // you can set the 'personality' of the ai with this
+  content: "You are a helpful assistant giving very short answers",
+};
 
 document.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -83,23 +80,60 @@ document.addEventListener("submit", (e) => {
 });
 
 async function fetchReply() {
-  const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: conversationArr,
-    // Advice: keep vals between 1 & -1 freq_pen best set at 0.3
-    presence_penalty: 0, // vals between 2.0 & -2.0 increments 0.01 higher vals increase the likelihood of the ai talking about new topics
-    frequency_penalty: 0.3, // vals between 2.0 & -2.0 higher vals decrease the likelihood of the ai repeating the exact same phrases
+  get(conversationInDb).then(async (snapshot) => {
+    // chceck the DataSnapshot exists
+    if (snapshot) {
+      const conversationArr = Object.values(snapshot.val());
+      // add the `instructionObj` to the `conversation` array each time it is sent to the DB
+      conversationArr.unshift(instructionObj);
+
+      console.log(conversationArr);
+
+      const response = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: conversationArr,
+        presence_penalty: 0,
+        frequency_penalty: 0.3,
+      });
+      console.log(response);
+
+      // some vars to hold references to the message object & message content returned by the model
+      const msgObj = response.data.choices[0].message; // the response objec
+      const msgContent = response.data.choices[0].message.content; // the response object content
+
+      console.log(msgObj);
+      console.log(msgContent);
+
+      // push the response object the DB using the firebase `push()` method
+      push(conversationInDb, msgObj);
+      // write to the GUI
+      renderTypewriterText(msgContent);
+    } else {
+      console.log("no snapshot, no data :-'\\");
+    }
   });
-
-  console.log(response);
-
-  const answer = response.data.choices[0].message.content;
-  const msgObj = response.data.choices[0].message;
-
-  renderTypewriterText(answer);
-  conversationArr.push(msgObj);
-  console.log(conversationArr);
 }
+
+// // **** pre-firebase install **** \\
+// async function fetchReply() {
+//   const response = await openai.createChatCompletion({
+//     model: "gpt-3.5-turbo",
+//     messages: conversationArr,
+//     // Advice: keep vals between 1 & -1 freq_pen best set at 0.3
+//     presence_penalty: 0, // vals between 2.0 & -2.0 increments 0.01 higher vals increase the likelihood of the ai talking about new topics
+//     frequency_penalty: 0.3, // vals between 2.0 & -2.0 higher vals decrease the likelihood of the ai repeating the exact same phrases
+//   });
+
+//   console.log(response);
+
+//   const answer = response.data.choices[0].message.content;
+//   const msgObj = response.data.choices[0].message;
+
+//   renderTypewriterText(answer);
+//   conversationArr.push(msgObj);
+//   console.log(conversationArr);
+// }
+// // **** pre-firebase install **** \\
 
 function renderTypewriterText(text) {
   const newSpeechBubble = document.createElement("div");
